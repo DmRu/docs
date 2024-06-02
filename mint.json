@@ -5,7 +5,7 @@
     "dark": "/logo/wikilect-dark.svg",
     "light": "/logo/wikilect-light.svg"
   },
-  "favicon": "/favicon.svg",
+  "favicon": "logo/favicon.svg",
   "colors": {
     "primary": "#835FE5",
     "light": "#835FE5",
