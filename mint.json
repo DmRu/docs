@@ -90,5 +90,8 @@
   "footerSocials": {
     "github": "https://github.com/mintlify",
     "website": "https://wikilect.com"
+  },
+  "api": {
+    "baseUrl": "https://app.stage.wikilect.com/"
   }
 }
