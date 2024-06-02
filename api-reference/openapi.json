@@ -1,72 +1,359 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.3",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
-    "version": "1.0.0"
+    "title": "",
+    "version": "0.0.0"
   },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
+    "/api/account/login/": {
+      "post": {
+        "operationId": "account_login_create",
+        "description": "Check the credentials and return the REST Token\nif the credentials are valid and authenticated.\nCalls Django Auth login method to register User ID\nin Django session framework\n\nAccept the following POST parameters: username, password\nReturn the REST Framework Token Object's key.",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
             }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JWT"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/logout/": {
+      "post": {
+        "operationId": "account_logout_create",
+        "description": "Calls Django logout method and delete the Token object\nassigned to the current User object.\n\nAccepts/Returns nothing.",
+        "tags": [
+          "account"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestAuthDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/password/change/": {
+      "post": {
+        "operationId": "account_password_change_create",
+        "description": "Calls Django Auth SetPasswordForm save method.\n\nAccepts the following POST parameters: new_password1, new_password2\nReturns the success/fail message.",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChange"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChange"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordChange"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
+                  "$ref": "#/components/schemas/RestAuthDetail"
                 }
               }
-            }
-          },
-          "400": {
-            "description": "Unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            },
+            "description": ""
           }
         }
-      },
+      }
+    },
+    "/api/account/password/reset/": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "operationId": "account_password_reset_create",
+        "description": "Calls Django Auth PasswordResetForm save method.\n\nAccepts the following POST parameters: email\nReturns the success/fail message.",
+        "tags": [
+          "account"
+        ],
         "requestBody": {
-          "description": "Plant to add to the store",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "$ref": "#/components/schemas/MyPasswordReset"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/MyPasswordReset"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/MyPasswordReset"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestAuthDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/password/reset/confirm/": {
+      "post": {
+        "operationId": "account_password_reset_confirm_create",
+        "description": "Password reset e-mail link is confirmed, therefore\nthis resets the user's password.\n\nAccepts the following POST parameters: token, uid,\n    new_password1, new_password2\nReturns the success/fail message.",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetConfirm"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetConfirm"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PasswordResetConfirm"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestAuthDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/registration/": {
+      "post": {
+        "operationId": "account_registration_create",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomRegister"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomRegister"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomRegister"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CustomRegister"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/resend-email/": {
+      "post": {
+        "operationId": "account_resend_email_create",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendEmailVerification"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendEmailVerification"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ResendEmailVerification"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestAuthDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/token/refresh/": {
+      "post": {
+        "operationId": "account_token_refresh_create",
+        "description": "Takes a refresh type JSON web token and returns an access type JSON web\ntoken if the refresh token is valid.",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRefresh"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRefresh"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRefresh"
               }
             }
           },
@@ -74,57 +361,4889 @@
         },
         "responses": {
           "200": {
-            "description": "plant response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "$ref": "#/components/schemas/TokenRefresh"
                 }
               }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            },
+            "description": ""
           }
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/api/account/token/verify/": {
+      "post": {
+        "operationId": "account_token_verify_create",
+        "description": "Takes a token and indicates if it is valid.  This view provides no\ninformation about a token's fitness for a particular use.",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenVerify"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenVerify"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenVerify"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenVerify"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/user/": {
+      "get": {
+        "operationId": "account_user_retrieve",
+        "description": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.\n\nDefault accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
+        "tags": [
+          "account"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetails"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "account_user_update",
+        "description": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.\n\nDefault accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDetails"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDetails"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDetails"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetails"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "account_user_partial_update",
+        "description": "Reads and updates UserModel fields\nAccepts GET, PUT, PATCH methods.\n\nDefault accepted fields: username, first_name, last_name\nDefault display fields: pk, username, email, first_name, last_name\nRead-only fields: pk, email\n\nReturns UserModel fields.",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedUserDetails"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedUserDetails"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedUserDetails"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDetails"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/account/verify-email/": {
+      "post": {
+        "operationId": "account_verify_email_create",
+        "tags": [
+          "account"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmail"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmail"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyEmail"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RestAuthDetail"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bot_conversation/": {
+      "post": {
+        "operationId": "bot_conversation_create",
+        "description": "Диалог-bot",
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
+            "in": "query",
+            "name": "consultantSlug",
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "integer"
+            },
+            "description": "Консультант Slug",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "bots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationStream"
+              },
+              "examples": {
+                "ПримерЗапроса": {
+                  "value": {
+                    "externUserId": 5310510760,
+                    "externUsername": "ggtrin",
+                    "skillId": 5,
+                    "message": [
+                      {
+                        "content": "Elon Musk, but AI version! ggtrin",
+                        "message_type": 0,
+                        "tool": "chat",
+                        "isManagerMessage": true
+                      }
+                    ],
+                    "integrationType": "TELEGRAM",
+                    "integrationId": 174
+                  },
+                  "summary": "Пример запроса"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationStream"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationStream"
+              }
             }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/bots/extern_user/": {
+      "get": {
+        "operationId": "bots_extern_user_list",
+        "description": "Extern user",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "consultantSlug",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Консультант slug"
+          }
+        ],
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ExternUserInfo"
+                  }
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": [
+                      {
+                        "id": 2,
+                        "ordered_info": {
+                          "username": "polinapo25",
+                          "full_name": "Полина Нечаева",
+                          "integration_name": "TELEGRAM"
+                        }
+                      }
+                    ],
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bots/extern_user/{id}/": {
+      "get": {
+        "operationId": "bots_extern_user_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this extern user.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExternUserInfo"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bots/integrations/": {
+      "get": {
+        "operationId": "bots_integrations_list",
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Integration"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bots/integrations/{skill_id}/": {
+      "get": {
+        "operationId": "bots_integrations_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skill_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/bots/telegram_bot/": {
+      "get": {
+        "operationId": "bots_telegram_bot_list",
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TelegramBot"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "bots_telegram_bot_create",
+        "tags": [
+          "bots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramBot"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramBot"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/TelegramBot"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramBot"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/bots/telegram_bot/{id}/": {
+      "get": {
+        "operationId": "bots_telegram_bot_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this telegram bot.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramBot"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "bots_telegram_bot_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this telegram bot.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "bots"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTelegramBot"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTelegramBot"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTelegramBot"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TelegramBot"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "bots_telegram_bot_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this telegram bot.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
           }
         ],
         "responses": {
           "204": {
-            "description": "Plant deleted",
-            "content": {}
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/bots/telegram_bot/webhook": {
+      "post": {
+        "operationId": "bots_telegram_bot_webhook_create",
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
           },
-          "400": {
-            "description": "unexpected error",
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/": {
+      "get": {
+        "operationId": "chat_conversations_list",
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Conversation"
+                  }
                 }
               }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "chat_conversations_create",
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
             }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/{id}/": {
+      "get": {
+        "operationId": "chat_conversations_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "chat_conversations_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "chat_conversations_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedConversation"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedConversation"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedConversation"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "chat_conversations_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/chat/conversations/delete_all/": {
+      "delete": {
+        "operationId": "chat_conversations_delete_all_destroy",
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/chat/messages/": {
+      "get": {
+        "operationId": "chat_messages_list",
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Message"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "chat_messages_create",
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Message"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Message"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Message"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/chat/messages/{id}/": {
+      "get": {
+        "operationId": "chat_messages_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Сообщение.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "chat_messages_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Сообщение.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Message"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Message"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Message"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "chat_messages_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Сообщение.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedMessage"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedMessage"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedMessage"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "chat_messages_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Сообщение.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/chat/settings/": {
+      "get": {
+        "operationId": "chat_settings_list",
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Setting"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "chat_settings_create",
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Setting"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Setting"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Setting"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Setting"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/chat/settings/{id}/": {
+      "get": {
+        "operationId": "chat_settings_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Setting"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "chat_settings_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Setting"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Setting"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Setting"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Setting"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "chat_settings_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSetting"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSetting"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSetting"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Setting"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "chat_settings_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/client/request": {
+      "get": {
+        "operationId": "client_request_retrieve",
+        "tags": [
+          "client"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/consultant/": {
+      "get": {
+        "operationId": "consultant_list",
+        "description": "Список консультантов",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ConsultantOutPut"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "consultant_create",
+        "description": "Список консультантов",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultantInPut"
+              },
+              "examples": {
+                "ПримерЗапроса": {
+                  "value": {
+                    "title": "Title"
+                  },
+                  "summary": "Пример запроса"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultantInPut"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultantInPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultantInPut"
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": {
+                      "id": 14,
+                      "image": "/media/consultant_img/default/default_avatar.png",
+                      "is_integration": false,
+                      "title": "Created consultant",
+                      "text": null,
+                      "slug": "potter-a98415a4-f4b1-443d-b9e0-8150e36c068f",
+                      "is_custom": true,
+                      "created_at": "2023-11-24T19:07:35.583011Z",
+                      "tenant": 1
+                    },
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/consultant/{slug}/": {
+      "get": {
+        "operationId": "consultant_retrieve",
+        "description": "Список консультантов",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultantInPut"
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": {
+                      "id": 14,
+                      "image": "/media/consultant_img/default/default_avatar.png",
+                      "is_integration": false,
+                      "title": "Created consultant",
+                      "text": null,
+                      "slug": "potter-a98415a4-f4b1-443d-b9e0-8150e36c068f",
+                      "is_custom": true,
+                      "created_at": "2023-11-24T19:07:35.583011Z",
+                      "tenant": 1
+                    },
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "consultant_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultantInPut"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultantInPut"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsultantInPut"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultantInPut"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "consultant_partial_update",
+        "description": "Список консультантов",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedConsultantInPut"
+              },
+              "examples": {
+                "ПримерЗапроса1": {
+                  "value": {
+                    "title": "Title",
+                    "text": "string"
+                  },
+                  "summary": "Пример запроса 1"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedConsultantInPut"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedConsultantInPut"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsultantInPut"
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": {
+                      "id": 14,
+                      "image": "/media/consultant_img/default/default_avatar.png",
+                      "is_integration": false,
+                      "title": "Title",
+                      "text": "string",
+                      "slug": "potter-a98415a4-f4b1-443d-b9e0-8150e36c068f",
+                      "is_custom": true,
+                      "created_at": "2023-11-24T19:07:35.583011Z",
+                      "tenant": 1
+                    },
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "consultant_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/consultant/{slug}/skill/": {
+      "get": {
+        "operationId": "consultant_skill_list",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string",
+              "pattern": "^[-\\w]+$"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Skill"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "consultant_skill_create",
+        "description": "Создание навыка",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string",
+              "pattern": "^[-\\w]+$"
+            },
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Skill"
+              },
+              "examples": {
+                "ПримерЗапроса1": {
+                  "value": {
+                    "name": "Title"
+                  },
+                  "summary": "Пример запроса 1"
+                },
+                "ПримерЗапроса2": {
+                  "value": {
+                    "name": "Title",
+                    "storages": [
+                      8
+                    ]
+                  },
+                  "summary": "Пример запроса 2"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Skill"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Skill"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Skill"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/consultant/{slug}/skill/{skill_slug}/": {
+      "get": {
+        "operationId": "consultant_skill_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skill_slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string",
+              "pattern": "^[-\\w]+$"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Skill"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "consultant_skill_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skill_slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string",
+              "pattern": "^[-\\w]+$"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Skill"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Skill"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Skill"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Skill"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "consultant_skill_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skill_slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string",
+              "pattern": "^[-\\w]+$"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSkill"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSkill"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSkill"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Skill"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "consultant_skill_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "skill_slug",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": {
+              "type": "string",
+              "pattern": "^[-\\w]+$"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "consultant"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/conversation/": {
+      "post": {
+        "operationId": "conversation_create",
+        "description": "Диалог",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationStream"
+              },
+              "examples": {
+                "ПримерЗапроса1": {
+                  "value": {
+                    "conversationId": 3
+                  },
+                  "summary": "Пример запроса 1"
+                },
+                "ПримерЗапроса2": {
+                  "value": {
+                    "conversationId": 3,
+                    "message": [
+                      {
+                        "content": "Hello word",
+                        "message_type": 0,
+                        "tool": "chat"
+                      }
+                    ],
+                    "promptParams": {
+                      "example_variable": "example_value"
+                    }
+                  },
+                  "summary": "Пример запроса 2"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationStream"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationStream"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {},
+                  "description": "Unspecified response body"
+                },
+                "examples": {
+                  "UserMessageID": {
+                    "value": {
+                      "userMessageId": 4
+                    },
+                    "summary": "ID of user message"
+                  },
+                  "BotMessage1": {
+                    "value": {
+                      "content": "How "
+                    },
+                    "summary": "Regular message from bot 1"
+                  },
+                  "BotMessage2": {
+                    "value": {
+                      "content": "can "
+                    },
+                    "summary": "Regular message from bot 2"
+                  },
+                  "BotMessage": {
+                    "value": {
+                      "content": "?"
+                    },
+                    "summary": "Regular message from bot N"
+                  },
+                  "StreamEnd": {
+                    "value": {
+                      "messageId": 5,
+                      "conversationId": 3,
+                      "newDocId": null
+                    },
+                    "summary": "End of event stream message"
+                  }
+                }
+              }
+            },
+            "description": "A stream of server-sent events."
+          }
+        }
+      }
+    },
+    "/api/gen_title/": {
+      "post": {
+        "operationId": "gen_title_create",
+        "description": "Генерация названия чата",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              },
+              "examples": {
+                "ПримерЗапроса": {
+                  "value": {
+                    "conversationId": 3
+                  },
+                  "summary": "Пример запроса"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Conversation"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {},
+                  "description": "Unspecified response body"
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": {
+                      "title": "Conversation title"
+                    },
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": "Сгенерированный заголовок беседы."
+          }
+        }
+      }
+    },
+    "/api/get_new_bot_conversation/": {
+      "post": {
+        "operationId": "get_new_bot_conversation_create",
+        "description": "Новый telegram-чат",
+        "tags": [
+          "bots"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewConversation"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/get_new_conversation/": {
+      "post": {
+        "operationId": "get_new_conversation_create",
+        "description": "Диалог",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "consultantSlug",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Consultant ID",
+            "required": true
+          },
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AIModelForConversation"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/AIModelForConversation"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/AIModelForConversation"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NewConversation"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/model/": {
+      "get": {
+        "operationId": "model_list",
+        "description": "Список моделей",
+        "tags": [
+          "model"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Model"
+                  }
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "name": "gpt-3.5-turbo",
+                        "fields": [
+                          {
+                            "max": 1,
+                            "min": 0,
+                            "name": "temperature",
+                            "type": "int",
+                            "descrition": "Креативность AI",
+                            "is_visible": true
+                          }
+                        ],
+                        "is_default": false
+                      }
+                    ],
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/model/{id}/": {
+      "get": {
+        "operationId": "model_retrieve",
+        "description": "Информация о модели",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Модель.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "model"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Model"
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": {
+                      "id": 1,
+                      "name": "gpt-3.5-turbo",
+                      "fields": [
+                        {
+                          "max": 1,
+                          "min": 0,
+                          "name": "temperature",
+                          "type": "int",
+                          "descrition": "Креативность AI",
+                          "is_visible": true
+                        }
+                      ],
+                      "is_default": false
+                    },
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/plugin/": {
+      "get": {
+        "operationId": "plugin_list",
+        "description": "Список плагинов",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "skillId",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Текущий навык",
+            "required": true
+          }
+        ],
+        "tags": [
+          "plugin"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Plugin"
+                  }
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "name": "SearchBooster",
+                        "display_name": "Search booster",
+                        "description": "SearchBooster plugin",
+                        "image": null,
+                        "fields": [
+                          {
+                            "id": 1,
+                            "title": "Токен SB",
+                            "name": "api_key",
+                            "type": "text",
+                            "required": true,
+                            "tutorial": {
+                              "link": "https://admin.searchbooster.io/",
+                              "name": "Где взять токен?"
+                            },
+                            "isEditable": true,
+                            "placeholder": "",
+                            "tooltip": ""
+                          }
+                        ],
+                        "is_connected": false,
+                        "tutorial_link": [
+                          {
+                            "text": "Где взять токен SB?"
+                          },
+                          {
+                            "link": null
+                          }
+                        ],
+                        "global_description": "SearchBooster plugin description",
+                        "is_required_integration": false
+                      }
+                    ],
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "plugin_create",
+        "description": "Подключение плагина к навыку",
+        "tags": [
+          "plugin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillPlugin"
+              },
+              "examples": {
+                "ПримерЗапроса1": {
+                  "value": {
+                    "plugin_id": 1,
+                    "skill_id": 1,
+                    "config": {
+                      "token": "dgd0b-fdg7n-fh69f"
+                    },
+                    "is_connected": true
+                  },
+                  "summary": "Пример запроса 1"
+                },
+                "ПримерЗапроса2": {
+                  "value": {
+                    "plugin_id": 1,
+                    "skill_id": 1,
+                    "is_connected": true
+                  },
+                  "summary": "Пример запроса 2"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillPlugin"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillPlugin"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillPlugin"
+                },
+                "examples": {
+                  "ПримерОтвета1": {
+                    "value": {
+                      "plugin_id": 1,
+                      "skill_id": 1,
+                      "config": {
+                        "token": "dgd0b-fdg7n-fh69f"
+                      },
+                      "is_connected": true
+                    },
+                    "summary": "Пример ответа 1"
+                  },
+                  "ПримерОтвета2": {
+                    "value": {
+                      "plugin_id": 1,
+                      "skill_id": 1,
+                      "config": null,
+                      "is_connected": true
+                    },
+                    "summary": "Пример ответа 2"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/plugin/{id}/": {
+      "put": {
+        "operationId": "plugin_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Плагин.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "plugin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillPlugin"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillPlugin"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillPlugin"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillPlugin"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "plugin_partial_update",
+        "description": "Редактирование подключения",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Плагин.",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "skillId",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Текущий навык",
+            "required": true
+          }
+        ],
+        "tags": [
+          "plugin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSkillPlugin"
+              },
+              "examples": {
+                "ПримерЗапроса": {
+                  "value": {
+                    "config": {
+                      "token": "dgd0b-fdg7n-fh69f"
+                    },
+                    "is_connected": true
+                  },
+                  "summary": "Пример запроса"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSkillPlugin"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSkillPlugin"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillPlugin"
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": {
+                      "plugin_id": 1,
+                      "skill_id": 1,
+                      "config": {
+                        "token": "dgd0b-fdg7n-fh69f"
+                      },
+                      "is_connected": true
+                    },
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "plugin_destroy",
+        "description": "Удаление подключения",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Плагин.",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "skillId",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Текущий навык",
+            "required": true
+          }
+        ],
+        "tags": [
+          "plugin"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/report_bot_conversation/": {
+      "get": {
+        "operationId": "report_bot_conversation_retrieve",
+        "tags": [
+          "report_bot_conversation"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/schema/": {
+      "get": {
+        "operationId": "schema_retrieve",
+        "description": "OpenApi3 schema for this API. Format can be selected via content negotiation.\n\n- YAML: application/vnd.oai.openapi\n- JSON: application/vnd.oai.openapi+json",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "format",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "json",
+                "yaml"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "lang",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "en",
+                "ru"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "schema"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.oai.openapi": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "application/yaml": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "application/vnd.oai.openapi+json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {}
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/statistic/": {
+      "get": {
+        "operationId": "statistic_list",
+        "description": "Расход токенов по датам",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date_from",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Начальная дата фильтрации"
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Конечная дата фильтрации"
+          },
+          {
+            "in": "query",
+            "name": "export",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Флаг для скачивания .csv файла"
+          },
+          {
+            "in": "query",
+            "name": "users",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Список Id юзеров для фильтрации"
+          },
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "statistic"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Request"
+                  }
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": [
+                      {
+                        "created_at": "2023-07-01",
+                        "tokens": 0
+                      }
+                    ],
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/statistic/consultant/": {
+      "get": {
+        "operationId": "statistic_consultant_list",
+        "description": "Расход токенов по консультантам",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date_from",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Начальная дата фильтрации"
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Конечная дата фильтрации"
+          },
+          {
+            "in": "query",
+            "name": "users",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Список Id юзеров для фильтрации"
+          },
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "statistic"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Request"
+                  }
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": [
+                      {
+                        "name": "Personal consultant",
+                        "tokens": 0
+                      }
+                    ],
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/statistic/debug_message/{message_id}/": {
+      "get": {
+        "operationId": "statistic_debug_message_retrieve",
+        "description": "Debug инфо о запросах и ответах OpenAI",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "message_id",
+            "schema": {
+              "type": "integer"
+            },
+            "required": true
+          }
+        ],
+        "tags": [
+          "statistic"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          },
+          {}
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Request"
+                },
+                "examples": {
+                  "ПримерОтвета1": {
+                    "value": {
+                      "debug": {
+                        "history": [
+                          {
+                            "role": "system",
+                            "content": "You are a helpful assistant for Polinka."
+                          },
+                          {
+                            "role": "user",
+                            "content": "How are you?"
+                          }
+                        ],
+                        "message": "How are you?"
+                      }
+                    },
+                    "summary": "Пример ответа 1"
+                  },
+                  "ПримерОтвета2": {
+                    "value": {
+                      "debug": [
+                        {
+                          "id": "chatcmpl-8k0RbBE6Ap8YOVl1UtoquDVXFAjnP",
+                          "model": "gpt-3.5-turbo-0613",
+                          "object": "chat.completion.chunk",
+                          "choices": [
+                            {
+                              "delta": {
+                                "role": "assistant",
+                                "content": "you"
+                              },
+                              "index": 0,
+                              "logprobs": null,
+                              "finish_reason": null
+                            }
+                          ],
+                          "created": 1705975487,
+                          "system_fingerprint": null
+                        }
+                      ]
+                    },
+                    "summary": "Пример ответа 2"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/statistic/skill/": {
+      "get": {
+        "operationId": "statistic_skill_list",
+        "description": "Расход токенов навыкам",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date_from",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Начальная дата фильтрации"
+          },
+          {
+            "in": "query",
+            "name": "date_to",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Конечная дата фильтрации"
+          },
+          {
+            "in": "query",
+            "name": "users",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Список Id юзеров для фильтрации"
+          },
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "statistic"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Request"
+                  }
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": [
+                      {
+                        "name": "First skill",
+                        "tokens": 446
+                      }
+                    ],
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/storage/": {
+      "get": {
+        "operationId": "storage_list",
+        "tags": [
+          "storage"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StorageFile"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "storage_create",
+        "description": "Создание базы знаний",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-tenant",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Текущий tenant",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFile"
+              },
+              "examples": {
+                "ПримерЗапроса": {
+                  "value": {
+                    "name": "Storage name"
+                  },
+                  "summary": "Пример запроса"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFile"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFile"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/storage/{id}/": {
+      "get": {
+        "operationId": "storage_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this База знаний.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFile"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "storage_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this База знаний.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFile"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFile"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/StorageFile"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFile"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "storage_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this База знаний.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedStorageFile"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedStorageFile"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedStorageFile"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StorageFile"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "storage_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this База знаний.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/storage/document_source/": {
+      "get": {
+        "operationId": "storage_document_source_list",
+        "description": "Список источников",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "storage",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Связанная база знаний"
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Source"
+                  }
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": [
+                      {
+                        "id": 1,
+                        "status": "DONE",
+                        "status_text": null,
+                        "is_document_file": false,
+                        "source_type": "WEBSITE_LIST",
+                        "name": "Hola",
+                        "storage": 1
+                      }
+                    ],
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "storage_document_source_create",
+        "description": "Создание документов и источников",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "storage",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Связанная база знаний"
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Source"
+              },
+              "examples": {
+                "ПримерЗапроса1": {
+                  "value": {
+                    "name": "Title",
+                    "source_type": "PLAIN_TEXT",
+                    "plain_text": "Hello! This is my first plain_text :)"
+                  },
+                  "summary": "Пример запроса 1"
+                },
+                "ПримерЗапроса2": {
+                  "value": {
+                    "name": "wikilect",
+                    "source_type": "WEBSITE_LIST",
+                    "url": [
+                      "https://optmebel.ru/contacts/",
+                      "https://optmebel.ru/",
+                      "https://optmebel.ru/delivery/"
+                    ],
+                    "settings": {
+                      "addLinkToText": true,
+                      "excludeXPath": [
+                        "br",
+                        "li"
+                      ]
+                    }
+                  },
+                  "summary": "Пример запроса 2"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Source"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Source"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Source"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/storage/document_source/{id}/": {
+      "get": {
+        "operationId": "storage_document_source_retrieve",
+        "description": "Просмотр источника и документов",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this source.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Source"
+                },
+                "examples": {
+                  "ПримерОтвета1": {
+                    "value": {
+                      "id": 25,
+                      "source_type": "WEBSITE_LIST",
+                      "name": "Title",
+                      "status": "DONE",
+                      "status_text": null,
+                      "storage": 7,
+                      "url": [
+                        "https://my.fitstars.ru/training/133"
+                      ],
+                      "settings": {
+                        "setting_1": "set_1"
+                      }
+                    },
+                    "summary": "Пример ответа 1"
+                  },
+                  "ПримерОтвета2": {
+                    "value": {
+                      "id": 9,
+                      "source_type": "PLAIN_TEXT",
+                      "name": "Plain text title",
+                      "status": "DONE",
+                      "status_text": null,
+                      "storage": 7,
+                      "plain_text": "Text about something"
+                    },
+                    "summary": "Пример ответа 2"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "storage_document_source_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this source.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Source"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Source"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Source"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Source"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "storage_document_source_partial_update",
+        "description": "Просмотр источника и документов",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this source.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSource"
+              },
+              "examples": {
+                "ПримерЗапроса1": {
+                  "value": {
+                    "name": "Title",
+                    "plain_text": "New plain text"
+                  },
+                  "summary": "Пример запроса 1"
+                },
+                "ПримерЗапроса2": {
+                  "value": {
+                    "url": [
+                      "https://my.fitstars.ru/training/133",
+                      "https://my.fitstars.ru/training"
+                    ]
+                  },
+                  "summary": "Пример запроса 2"
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSource"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedSource"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Source"
+                },
+                "examples": {
+                  "ПримерОтвета": {
+                    "value": {
+                      "id": 9,
+                      "source_type": "PLAIN_TEXT",
+                      "name": "Title",
+                      "status": "DONE",
+                      "status_text": null,
+                      "storage": 7,
+                      "plain_text": "New plain text"
+                    },
+                    "summary": "Пример ответа"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "storage_document_source_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this source.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "storage"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/tenants/": {
+      "get": {
+        "operationId": "tenants_list",
+        "tags": [
+          "tenants"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserTenantTenant"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "tenants_create",
+        "tags": [
+          "tenants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tenant"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Tenant"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Tenant"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tenants/{id}/": {
+      "get": {
+        "operationId": "tenants_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "tenants_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Tenant"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Tenant"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Tenant"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "tenants_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTenant"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTenant"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedTenant"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "tenants_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/tenants/invite/": {
+      "post": {
+        "operationId": "tenants_invite_create",
+        "description": "Приглашение юзеров присоединиться к тенанту - создание пользователей по массиву Email",
+        "tags": [
+          "tenants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailList"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailList"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailList"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmailList"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tenants/users/": {
+      "get": {
+        "operationId": "tenants_users_list",
+        "tags": [
+          "tenants"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserTenant"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "tenants_users_create",
+        "tags": [
+          "tenants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserTenant"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserTenant"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserTenant"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserTenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/tenants/users/{id}/": {
+      "get": {
+        "operationId": "tenants_users_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Пользователь и тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserTenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "tenants_users_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Пользователь и тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserTenant"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/UserTenant"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UserTenant"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserTenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "tenants_users_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Пользователь и тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedUserTenant"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedUserTenant"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedUserTenant"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserTenant"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "tenants_users_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Пользователь и тенант.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "tenants"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
+          }
+        }
+      }
+    },
+    "/api/widget/": {
+      "get": {
+        "operationId": "widget_list",
+        "tags": [
+          "widget"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Widget"
+                  }
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "operationId": "widget_create",
+        "tags": [
+          "widget"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Widget"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Widget"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Widget"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Widget"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/widget/{id}/": {
+      "get": {
+        "operationId": "widget_retrieve",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Виджет.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "widget"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Widget"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "operationId": "widget_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Виджет.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "widget"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Widget"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Widget"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Widget"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Widget"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "patch": {
+        "operationId": "widget_partial_update",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Виджет.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "widget"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedWidget"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedWidget"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchedWidget"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Widget"
+                }
+              }
+            },
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "operationId": "widget_destroy",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "integer"
+            },
+            "description": "A unique integer value identifying this Виджет.",
+            "required": true
+          }
+        ],
+        "tags": [
+          "widget"
+        ],
+        "security": [
+          {
+            "jwtHeaderAuth": []
+          },
+          {
+            "jwtCookieAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No response body"
           }
         }
       }
@@ -132,63 +5251,1883 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
+      "AIModelForConversation": {
+        "type": "object",
+        "properties": {
+          "ai_model_version": {
+            "type": "integer"
+          },
+          "skillId": {
+            "type": "integer"
+          }
+        },
         "required": [
-          "name"
+          "skillId"
+        ]
+      },
+      "AuthorRoleEnum": {
+        "enum": [
+          "USER",
+          "BOT",
+          "MANAGER"
         ],
+        "type": "string",
+        "description": "* `USER` - User\n* `BOT` - Bot\n* `MANAGER` - Manager"
+      },
+      "BlankEnum": {
+        "enum": [
+          ""
+        ]
+      },
+      "ConsultantInPut": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 512
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "is_custom": {
+            "type": "boolean",
+            "title": "Нестандартный"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          }
+        },
+        "required": [
+          "created_at",
+          "id",
+          "slug",
+          "tenant",
+          "title"
+        ]
+      },
+      "ConsultantOutPut": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "image": {
+            "type": "string",
+            "readOnly": true
+          },
+          "is_integration": {
+            "type": "string",
+            "readOnly": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 512
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "is_custom": {
+            "type": "boolean",
+            "title": "Нестандартный"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          }
+        },
+        "required": [
+          "created_at",
+          "id",
+          "image",
+          "is_integration",
+          "slug",
+          "tenant",
+          "title"
+        ]
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "topic": {
+            "type": "string",
+            "title": "Тема",
+            "maxLength": 255
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Время создания"
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "consultant": {
+            "type": "integer"
+          },
+          "ai_model_version": {
+            "type": "integer"
+          },
+          "is_integration": {
+            "type": "string",
+            "readOnly": true
+          },
+          "integration": {
+            "type": "string",
+            "readOnly": true
+          },
+          "extern_user": {
+            "$ref": "#/components/schemas/ExternUser"
+          },
+          "auto_answer": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "skill": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "required": [
+          "created_at",
+          "extern_user",
+          "id",
+          "integration",
+          "is_integration",
+          "topic"
+        ]
+      },
+      "ConversationStream": {
+        "type": "object",
+        "properties": {
+          "skillId": {
+            "type": "integer"
+          },
+          "conversationId": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "array",
+            "items": {}
+          }
+        },
+        "required": [
+          "conversationId"
+        ]
+      },
+      "CustomRegister": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 1
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password1": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "password2": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "recaptcha": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "email",
+          "password1",
+          "password2",
+          "recaptcha"
+        ]
+      },
+      "CustomUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "is_superuser": {
+            "type": "boolean",
+            "title": "Статус суперпользователя",
+            "description": "Указывает, что пользователь имеет все права без явного их назначения."
+          },
+          "username": {
+            "type": "string",
+            "title": "Имя пользователя",
+            "maxLength": 150
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Адрес электронной почты",
+            "maxLength": 254
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Активный",
+            "description": "Отметьте, если пользователь должен считаться активным. Уберите эту отметку вместо удаления учётной записи."
+          },
+          "is_global_admin": {
+            "type": "boolean",
+            "title": "Глобал админ"
+          }
+        },
+        "required": [
+          "id",
+          "username"
+        ]
+      },
+      "EmailList": {
+        "type": "object",
+        "properties": {
+          "emails": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        },
+        "required": [
+          "emails"
+        ]
+      },
+      "ExternUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "integration_type": {
+            "$ref": "#/components/schemas/Integration"
+          },
+          "extern_id": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 256
+          },
+          "extra_info": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          }
+        },
+        "required": [
+          "extern_id",
+          "id",
+          "integration_type"
+        ]
+      },
+      "ExternUserInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "full_name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "integration_name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string",
+            "readOnly": true
+          },
+          "last_chat_id": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "full_name",
+          "id",
+          "integration_name",
+          "last_chat_id",
+          "username"
+        ]
+      },
+      "Integration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "logo": {
+            "type": "string",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "readOnly": true
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "global_tutorial": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true,
+            "title": "Ссылка на подсказку"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "api_url": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 256
+          }
+        },
+        "required": [
+          "id",
+          "logo",
+          "name"
+        ]
+      },
+      "JWT": {
+        "type": "object",
+        "description": "Serializer for JWT authentication.",
+        "properties": {
+          "access_token": {
+            "type": "string"
+          },
+          "refresh_token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserDetails"
+          }
+        },
+        "required": [
+          "access_token",
+          "refresh_token",
+          "user"
+        ]
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "password"
+        ]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "message": {
+            "type": "string",
+            "title": "Сообщение"
+          },
+          "is_bot": {
+            "type": "boolean",
+            "title": "Сообщение бота"
+          },
+          "message_type": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": -2147483648,
+            "title": "Тип сообщения"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Время создания"
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "author_role": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AuthorRoleEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "author_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          }
+        },
+        "required": [
+          "created_at",
+          "id",
+          "message"
+        ]
+      },
+      "Model": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "title": "Имя отображаемое пользователю",
+            "maxLength": 255
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true,
+            "title": "Параметры"
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Значение по умолчанию"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "MyPasswordReset": {
+        "type": "object",
+        "description": "Serializer for requesting a password reset e-mail.",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "NewConversation": {
+        "type": "object",
+        "properties": {
+          "conversationId": {
+            "type": "integer"
+          },
+          "conversation_obj": {
+            "$ref": "#/components/schemas/Conversation"
+          }
+        },
+        "required": [
+          "conversationId",
+          "conversation_obj"
+        ]
+      },
+      "NullEnum": {
+        "enum": [
+          null
+        ]
+      },
+      "PasswordChange": {
+        "type": "object",
+        "properties": {
+          "new_password1": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "new_password2": {
+            "type": "string",
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "new_password1",
+          "new_password2"
+        ]
+      },
+      "PasswordResetConfirm": {
+        "type": "object",
+        "description": "Serializer for confirming a password reset attempt.",
+        "properties": {
+          "new_password1": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "new_password2": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "uid": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "new_password1",
+          "new_password2",
+          "token",
+          "uid"
+        ]
+      },
+      "PatchedConsultantInPut": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "text": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 512
+          },
+          "slug": {
+            "type": "string",
+            "maxLength": 256,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "is_custom": {
+            "type": "boolean",
+            "title": "Нестандартный"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          }
+        }
+      },
+      "PatchedConversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "topic": {
+            "type": "string",
+            "title": "Тема",
+            "maxLength": 255
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Время создания"
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "consultant": {
+            "type": "integer"
+          },
+          "ai_model_version": {
+            "type": "integer"
+          },
+          "is_integration": {
+            "type": "string",
+            "readOnly": true
+          },
+          "integration": {
+            "type": "string",
+            "readOnly": true
+          },
+          "extern_user": {
+            "$ref": "#/components/schemas/ExternUser"
+          },
+          "auto_answer": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "skill": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "PatchedMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "message": {
+            "type": "string",
+            "title": "Сообщение"
+          },
+          "is_bot": {
+            "type": "boolean",
+            "title": "Сообщение бота"
+          },
+          "message_type": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": -2147483648,
+            "title": "Тип сообщения"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Время создания"
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "author_role": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/AuthorRoleEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "author_name": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 255
+          }
+        }
+      },
+      "PatchedSetting": {
         "type": "object",
         "properties": {
           "name": {
-            "description": "The name of the plant",
-            "type": "string"
+            "type": "string",
+            "title": "Имя",
+            "maxLength": 255
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "value": {
+            "type": "string",
+            "title": "Значение",
+            "maxLength": 255
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+      "PatchedSkill": {
         "type": "object",
         "properties": {
-          "error": {
+          "id": {
             "type": "integer",
-            "format": "int32"
+            "readOnly": true
           },
-          "message": {
-            "type": "string"
+          "storages": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "skill_slug": {
+            "type": "string",
+            "maxLength": 50,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "title": "Описание",
+            "maxLength": 512
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "prompt": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3000
+          },
+          "is_published": {
+            "type": "boolean",
+            "title": "Опубликован"
+          },
+          "is_custom": {
+            "type": "boolean",
+            "title": "Нестандартный"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "chunks_num": {
+            "type": "integer",
+            "maximum": 10,
+            "minimum": 1,
+            "nullable": true
+          },
+          "relevance_drop_percent": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Базовый для консультанта"
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "consultant": {
+            "type": "integer",
+            "nullable": true
           }
         }
+      },
+      "PatchedSkillPlugin": {
+        "type": "object",
+        "properties": {
+          "plugin_id": {
+            "type": "integer"
+          },
+          "skill_id": {
+            "type": "integer"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "is_connected": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PatchedSource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "is_document_file": {
+            "type": "string",
+            "readOnly": true
+          },
+          "source_type": {
+            "nullable": true,
+            "title": "Source's type",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SourceTypeEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "status": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SourceStatusEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "status_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "storage": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "PatchedStorageFile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "chunk_size": {
+            "type": "integer",
+            "maximum": 64000,
+            "minimum": 100,
+            "nullable": true
+          },
+          "chunk_overlap": {
+            "type": "integer",
+            "maximum": 1000,
+            "minimum": 0,
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "created_by": {
+            "type": "integer",
+            "nullable": true,
+            "title": "User"
+          },
+          "skill": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "nullable": true
+            }
+          }
+        }
+      },
+      "PatchedTelegramBot": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "api_url": {
+            "type": "string",
+            "readOnly": true
+          },
+          "token": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "webhook_token": {
+            "type": "string",
+            "writeOnly": true,
+            "default": "55d9a94a-dfd8-466d-8d73-a18675a587db"
+          },
+          "integration_logo": {
+            "type": "string",
+            "readOnly": true
+          },
+          "global_conversations": {
+            "type": "boolean",
+            "nullable": true,
+            "title": "Show bot conversations to all tenant users"
+          },
+          "auto_answer": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "bot_first_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "webhook_status": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 64
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "integration": {
+            "type": "integer",
+            "nullable": true
+          },
+          "skill": {
+            "type": "integer"
+          },
+          "created_by": {
+            "type": "integer",
+            "nullable": true
+          }
+        }
+      },
+      "PatchedTenant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "title": "Имя",
+            "maxLength": 100
+          },
+          "subdomain_prefix": {
+            "type": "string",
+            "title": "Субдомен",
+            "maxLength": 100
+          },
+          "status": {
+            "$ref": "#/components/schemas/TenantStatusEnum"
+          }
+        }
+      },
+      "PatchedUserDetails": {
+        "type": "object",
+        "description": "User model w/o password",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string",
+            "title": "Имя пользователя",
+            "maxLength": 150
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "readOnly": true,
+            "title": "Адрес электронной почты"
+          }
+        }
+      },
+      "PatchedUserTenant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "user": {
+            "type": "integer",
+            "title": "Пользователь"
+          },
+          "role": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RoleEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          }
+        }
+      },
+      "PatchedWidget": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "default": "New widget",
+            "maxLength": 255
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          }
+        }
+      },
+      "Plugin": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "title": "Название",
+            "maxLength": 255
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Отображаемое название",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "title": "Описание",
+            "maxLength": 512
+          },
+          "image": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "config": {
+            "type": "string",
+            "readOnly": true
+          },
+          "is_connected": {
+            "type": "string",
+            "readOnly": true
+          },
+          "global_tutorial": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true,
+            "title": "Ссылка на подсказку"
+          },
+          "global_description": {
+            "type": "string",
+            "nullable": true,
+            "title": "Подробное описание",
+            "maxLength": 1028
+          },
+          "is_required_integration": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "config",
+          "display_name",
+          "id",
+          "is_connected",
+          "name"
+        ]
+      },
+      "Request": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "title": "Creation time"
+          },
+          "total_tokens": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": -2147483648,
+            "title": "Tokens"
+          },
+          "w_tokens": {
+            "type": "integer",
+            "maximum": 2147483647,
+            "minimum": -2147483648,
+            "title": "Wiki-tokens"
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "request_to_llm": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "response_from_llm": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type of request",
+            "maxLength": 512
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "title": "Description of request",
+            "maxLength": 1024
+          },
+          "delay": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "llm_model": {
+            "type": "integer"
+          },
+          "user": {
+            "type": "integer"
+          },
+          "message": {
+            "type": "integer",
+            "nullable": true
+          },
+          "consultant": {
+            "type": "integer",
+            "nullable": true
+          },
+          "skill": {
+            "type": "integer",
+            "nullable": true
+          },
+          "conversation": {
+            "type": "integer",
+            "nullable": true
+          },
+          "storage": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "required": [
+          "created_at",
+          "id",
+          "type",
+          "user"
+        ]
+      },
+      "ResendEmailVerification": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "RestAuthDetail": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "type": "string",
+            "readOnly": true
+          }
+        },
+        "required": [
+          "detail"
+        ]
+      },
+      "RoleEnum": {
+        "enum": [
+          "USER",
+          "ADMIN"
+        ],
+        "type": "string",
+        "description": "* `USER` - User\n* `ADMIN` - Admin"
+      },
+      "Setting": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Имя",
+            "maxLength": 255
+          },
+          "value": {
+            "type": "string",
+            "title": "Значение",
+            "maxLength": 255
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ]
+      },
+      "Skill": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "storages": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "skill_slug": {
+            "type": "string",
+            "maxLength": 50,
+            "pattern": "^[-a-zA-Z0-9_]+$"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "title": "Описание",
+            "maxLength": 512
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "prompt": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 3000
+          },
+          "is_published": {
+            "type": "boolean",
+            "title": "Опубликован"
+          },
+          "is_custom": {
+            "type": "boolean",
+            "title": "Нестандартный"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "chunks_num": {
+            "type": "integer",
+            "maximum": 10,
+            "minimum": 1,
+            "nullable": true
+          },
+          "relevance_drop_percent": {
+            "type": "integer",
+            "maximum": 100,
+            "minimum": 0
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Базовый для консультанта"
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "consultant": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "required": [
+          "consultant",
+          "created_at",
+          "id",
+          "name",
+          "skill_slug"
+        ]
+      },
+      "SkillPlugin": {
+        "type": "object",
+        "properties": {
+          "plugin_id": {
+            "type": "integer"
+          },
+          "skill_id": {
+            "type": "integer"
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "is_connected": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "is_connected",
+          "plugin_id",
+          "skill_id"
+        ]
+      },
+      "Source": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "is_document_file": {
+            "type": "string",
+            "readOnly": true
+          },
+          "source_type": {
+            "nullable": true,
+            "title": "Source's type",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SourceTypeEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 512
+          },
+          "status": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/SourceStatusEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          },
+          "status_text": {
+            "type": "string",
+            "nullable": true
+          },
+          "storage": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "is_document_file"
+        ]
+      },
+      "SourceStatusEnum": {
+        "enum": [
+          "IN_PROGRESS",
+          "DONE",
+          "ERROR"
+        ],
+        "type": "string",
+        "description": "* `IN_PROGRESS` - In Progress\n* `DONE` - Done\n* `ERROR` - Error"
+      },
+      "SourceTypeEnum": {
+        "enum": [
+          "TXT",
+          "PDF",
+          "DOCX",
+          "DOC",
+          "PLAIN_TEXT",
+          "WEBSITE_LIST",
+          "WEBSITE_CRAWLER"
+        ],
+        "type": "string",
+        "description": "* `TXT` - Txt\n* `PDF` - Pdf\n* `DOCX` - Docx\n* `DOC` - Doc\n* `PLAIN_TEXT` - Plain Text\n* `WEBSITE_LIST` - Website List\n* `WEBSITE_CRAWLER` - Website Crawler"
+      },
+      "StorageFile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "chunk_size": {
+            "type": "integer",
+            "maximum": 64000,
+            "minimum": 100,
+            "nullable": true
+          },
+          "chunk_overlap": {
+            "type": "integer",
+            "maximum": 1000,
+            "minimum": 0,
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "created_by": {
+            "type": "integer",
+            "nullable": true,
+            "title": "User"
+          },
+          "skill": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "nullable": true
+            }
+          }
+        },
+        "required": [
+          "created_at",
+          "id",
+          "name",
+          "tenant",
+          "updated_at"
+        ]
+      },
+      "TelegramBot": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "api_url": {
+            "type": "string",
+            "readOnly": true
+          },
+          "token": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "webhook_token": {
+            "type": "string",
+            "writeOnly": true,
+            "default": "55d9a94a-dfd8-466d-8d73-a18675a587db"
+          },
+          "integration_logo": {
+            "type": "string",
+            "readOnly": true
+          },
+          "global_conversations": {
+            "type": "boolean",
+            "nullable": true,
+            "title": "Show bot conversations to all tenant users"
+          },
+          "auto_answer": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 256
+          },
+          "bot_first_message": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true
+          },
+          "webhook_status": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 64
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          },
+          "integration": {
+            "type": "integer",
+            "nullable": true
+          },
+          "skill": {
+            "type": "integer"
+          },
+          "created_by": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        "required": [
+          "api_url",
+          "created_at",
+          "id",
+          "integration_logo",
+          "name",
+          "skill",
+          "token"
+        ]
+      },
+      "Tenant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "title": "Имя",
+            "maxLength": 100
+          },
+          "subdomain_prefix": {
+            "type": "string",
+            "title": "Субдомен",
+            "maxLength": 100
+          },
+          "status": {
+            "$ref": "#/components/schemas/TenantStatusEnum"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "subdomain_prefix"
+        ]
+      },
+      "TenantStatusEnum": {
+        "enum": [
+          "active",
+          "in_trial",
+          "expired",
+          "inactive"
+        ],
+        "type": "string",
+        "description": "* `active` - Active\n* `in_trial` - In Trial\n* `expired` - Expired\n* `inactive` - Inactive"
+      },
+      "TokenRefresh": {
+        "type": "object",
+        "properties": {
+          "access": {
+            "type": "string",
+            "readOnly": true
+          },
+          "refresh": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "access",
+          "refresh"
+        ]
+      },
+      "TokenVerify": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "UserDetails": {
+        "type": "object",
+        "description": "User model w/o password",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "username": {
+            "type": "string",
+            "title": "Имя пользователя",
+            "maxLength": 150
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "readOnly": true,
+            "title": "Адрес электронной почты"
+          }
+        },
+        "required": [
+          "email",
+          "id",
+          "username"
+        ]
+      },
+      "UserTenant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CustomUser"
+              }
+            ],
+            "readOnly": true
+          },
+          "role": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RoleEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "user"
+        ]
+      },
+      "UserTenantTenant": {
+        "type": "object",
+        "properties": {
+          "tenant": {
+            "$ref": "#/components/schemas/Tenant"
+          },
+          "role": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RoleEnum"
+              },
+              {
+                "$ref": "#/components/schemas/BlankEnum"
+              },
+              {
+                "$ref": "#/components/schemas/NullEnum"
+              }
+            ]
+          }
+        },
+        "required": [
+          "tenant"
+        ]
+      },
+      "VerifyEmail": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "writeOnly": true
+          }
+        },
+        "required": [
+          "key"
+        ]
+      },
+      "Widget": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string",
+            "default": "New widget",
+            "maxLength": 255
+          },
+          "config": {
+            "type": "object",
+            "additionalProperties": {},
+            "nullable": true
+          },
+          "tenant": {
+            "type": "integer",
+            "nullable": true,
+            "title": "Тенант"
+          }
+        },
+        "required": [
+          "id",
+          "tenant"
+        ]
       }
     },
     "securitySchemes": {
-      "bearerAuth": {
+      "jwtCookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "auth"
+      },
+      "jwtHeaderAuth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     }
   }
