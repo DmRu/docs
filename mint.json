@@ -41,11 +41,6 @@
       "icon": "book-open-cover",
       "url": "https://wikilect.mintlify.app/introduction"
     },
-//    {
-//      "name": "Community",
-//      "icon": "slack",
-//      "url": "https://mintlify.com/community"
-//    },
     {
       "name": "Blog",
       "icon": "newspaper",
