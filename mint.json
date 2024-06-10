@@ -25,16 +25,16 @@
     "name": "Войти",
     "url": "https://app.streammydata.ru"
   },
-//  "tabs": [
-//    {
-//      "name": "API Reference",
-//      "url": "api-reference"
-//    },
-//    {
-//      "name": "Blog",
-//      "url": "https://streammydata.ru/blog/"
-//    }
-//  ],
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Blog",
+      "url": "https://streammydata.ru/blog/"
+    }
+  ],
   "anchors": [
     {
       "name": "Documentation",
@@ -49,7 +49,7 @@
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://streammydata.ru/blog/
+      "url": "https://streammydata.ru/blog/"
     }
   ],
   "navigation": [
