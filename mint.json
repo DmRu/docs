@@ -11,8 +11,8 @@
     "light": "#FFC200",
     "dark": "#FFC200",
     "anchors": {
-      "from": "#835FE5",
-      "to": "#9F86E3"
+      "from": "#E7BF43",
+      "to": "#FFC200"
     }
   },
   "topbarLinks": [
@@ -25,44 +25,48 @@
     "name": "Войти",
     "url": "https://app.streammydata.ru"
   },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    },
-    {
-      "name": "Blog",
-      "url": "https://streammydata.ru/blog/"
-    }
-  ],
+//  "tabs": [
+//    {
+//      "name": "API Reference",
+//      "url": "api-reference"
+//    },
+//    {
+//      "name": "Blog",
+//      "url": "https://streammydata.ru/blog/"
+//    }
+//  ],
   "anchors": [
     {
       "name": "Documentation",
       "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "url": "https://wikilect.mintlify.app/introduction"
     },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
+//    {
+//      "name": "Community",
+//      "icon": "slack",
+//      "url": "https://mintlify.com/community"
+//    },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://streammydata.ru/blog/
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
       "pages": [
+        "Атрибуция в прошлое",
+        "Полнота и достоверность данных",
+        "Смешивайте и соединяйте данные как угодно",
+        "Соберите все ваши данные в одном месте",
         "introduction",
         "quickstart",
         "development"
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Интеграции",
       "pages": [
         "essentials/markdown",
         "essentials/code",
@@ -89,7 +93,7 @@
   ],
   "footerSocials": {
     "github": "https://github.com/mintlify",
-    "website": "https://wikilect.com"
+    "website": "https://streammydata.com"
   },
   "api": {
     "baseUrl": "https://app.stage.wikilect.com/"
