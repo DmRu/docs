@@ -5,11 +5,11 @@
     "dark": "/logo/streammydata-dark.svg",
     "light": "/logo/streammydata-light.svg"
   },
-  "favicon": "logo/favicon.svg",
-  "colors": {
-    "primary": "#835FE5",
-    "light": "#835FE5",
-    "dark": "#835FE5",
+  "favicon": "logo/favicon-smd.svg",
+    "colors": {
+    "primary": "#FFC200",
+    "light": "#FFC200",
+    "dark": "#FFC200",
     "anchors": {
       "from": "#835FE5",
       "to": "#9F86E3"
@@ -22,7 +22,7 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Потоки",
+    "name": "Войти",
     "url": "https://app.streammydata.ru"
   },
   "tabs": [
@@ -32,7 +32,7 @@
     },
     {
       "name": "Blog",
-      "url": "https://your-website.com/blog"
+      "url": "https://streammydata.ru/blog/"
     }
   ],
   "anchors": [
