@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/wikilect-dark.svg",
-    "light": "/logo/wikilect-light.svg"
+    "dark": "/logo/streammydata-dark.svg",
+    "light": "/logo/streammydata-light.svg"
   },
   "favicon": "logo/favicon.svg",
   "colors": {
@@ -18,12 +18,12 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@wikilect.com"
+      "url": "mailto:hi@streammydata.ru"
     }
   ],
   "topbarCtaButton": {
-    "name": "AI-Chat",
-    "url": "https://app.wikilect.com"
+    "name": "Потоки",
+    "url": "https://app.streammydata.ru"
   },
   "tabs": [
     {
